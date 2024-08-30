@@ -50,3 +50,8 @@ This script continuously checks the logs and restarts the node if any errors are
 >> After 5 errors, the node is continuously rebooted
 
 ```bash
+screen -S nillion
+curl -sS https://raw.githubusercontent.com/Onixs50/nillion-fixed/main/nillion.sh
+chmod +x nillion.sh
+./nillion.sh
+```
