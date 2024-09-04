@@ -1,5 +1,33 @@
-# nillion-fixed
 
+### Nillion Docker Management Script
+
+This script automates the process of managing a Docker container for the Nillion network. It handles container creation, monitoring, error detection, and automatic failover to alternative RPC endpoints in case of repeated errors. Below is a summary of what the script does:
+
+#### Key Features:
+• **Container Initialization**:
+  - The script begins by checking if a container named `nillion-container` is already running. If it is, the script stops and removes it.
+  - It then starts a new container using the `nillion/retailtoken-accuser` Docker image, connecting it to a specified RPC endpoint.
+
+• **RPC Endpoint Management**:
+  - The script allows for multiple RPC endpoints to be defined.
+  - If errors are detected in the logs, the script will attempt to restart the container using the next available RPC endpoint after two errors. This process continues until all endpoints are exhausted, then it cycles back to the first.
+
+• **Error Monitoring**:
+  - The script continuously monitors the logs of the running container, specifically looking for errors.
+  - If errors are found, the script tracks the count. After two consecutive errors, it stops the container, switches to the next RPC endpoint, and restarts the container.
+
+• **Log Output**:
+  - The script periodically outputs the current status, including any registered nodes, found secret stores, and challenges sent to Nilchain.
+  - This information helps monitor the health and activity of the container.
+
+• **Automatic Restarts**:
+  - If the container stops running for any reason, the script will automatically attempt to restart it.
+
+#### Key Changes:
+• **Removing Stopped Containers**: The script now removes not only running containers but also any stopped containers with the same name.
+• **Improved Container Management**: By removing stopped containers, the script prevents the creation of redundant containers.
+
+These updates should address your issue and ensure that only one container is active at a time.
 
 
 ## Prerequisites:
