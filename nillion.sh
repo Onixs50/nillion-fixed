@@ -9,6 +9,10 @@ MAGENTA='\033[0;35m'
 CYAN='\033[0;36m'
 NC='\033[0m' # No Color
 
+# Define RPC endpoints
+RPC_ENDPOINTS=("https://testnet-nillion-rpc.lavenderfive.com/" "https://nillion-testnet-rpc.polkachu.com" "https://nillion-testnet.rpc.kjnodes.com")
+CURRENT_RPC_INDEX=0
+
 show_banner() {
     echo -e "${MAGENTA}"
     echo "╔═══════════════════════════════════════════╗"
@@ -19,7 +23,7 @@ show_banner() {
 }
 
 run_docker() {
-    sudo docker run -d --name nillion-container -v ./nillion/accuser:/var/tmp nillion/retailtoken-accuser:latest accuse --rpc-endpoint "https://testnet-nillion-rpc.lavenderfive.com/" --block-start "$(curl -s https://testnet-nillion-rpc.lavenderfive.com/abci_info | jq -r '.result.response.last_block_height')"
+    sudo docker run -d --name nillion-container -v ./nillion/accuser:/var/tmp nillion/retailtoken-accuser:latest accuse --rpc-endpoint "${RPC_ENDPOINTS[$CURRENT_RPC_INDEX]}" --block-start "$(curl -s ${RPC_ENDPOINTS[$CURRENT_RPC_INDEX]}abci_info | jq -r '.result.response.last_block_height')"
 }
 
 check_and_remove_container() {
@@ -52,9 +56,13 @@ monitor_logs() {
 
         if echo "$logs" | grep -q "Error"; then
             error_count=$((error_count + 1))
-            echo -e "${RED}Error detected in logs. Error count: $error_count / 5${NC}"
-            if [ $error_count -ge 5 ]; then
-                echo -e "${RED}Error threshold reached. Restarting container...${NC}"
+            echo -e "${RED}Error detected in logs. Error count: $error_count / 2${NC}"
+            if [ $error_count -ge 2 ]; then
+                echo -e "${RED}Error threshold reached. Switching RPC endpoint and restarting container...${NC}"
+                CURRENT_RPC_INDEX=$((CURRENT_RPC_INDEX + 1))
+                if [ $CURRENT_RPC_INDEX -ge ${#RPC_ENDPOINTS[@]} ]; then
+                    CURRENT_RPC_INDEX=0
+                fi
                 break
             fi
         else
@@ -70,7 +78,7 @@ show_banner
 while true; do
     check_and_remove_container
     run_docker
-    echo -e "${BLUE}Container started. Monitoring logs...${NC}"
+    echo -e "${BLUE}Container started with RPC endpoint: ${RPC_ENDPOINTS[$CURRENT_RPC_INDEX]}. Monitoring logs...${NC}"
     sleep 10
     monitor_logs
     check_and_remove_container
