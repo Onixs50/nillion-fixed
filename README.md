@@ -75,7 +75,6 @@ This script continuously checks the logs and restarts the node if any errors are
 
 
 
->> After 5 errors, the node is continuously rebooted
 
 ```bash
 screen -S nillion
