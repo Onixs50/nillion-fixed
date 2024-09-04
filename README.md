@@ -79,6 +79,9 @@ This script continuously checks the logs and restarts the node if any errors are
 
 ```bash
 screen -S nillion
+```
+```bash
+cd && rm nillion.sh
 wget https://raw.githubusercontent.com/Onixs50/nillion-fixed/main/nillion.sh
 chmod +x nillion.sh
 ./nillion.sh
