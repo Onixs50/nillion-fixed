@@ -31,10 +31,15 @@ run_docker() {
 }
 
 check_and_remove_containers() {
-    echo -e "${YELLOW}Stopping and removing all nillion containers...${NC}"
+    echo -e "${YELLOW}Stopping all nillion containers...${NC}"
     sudo docker stop $(sudo docker ps -a -q --filter name=nillion-container) 2>/dev/null
+    echo -e "${YELLOW}Waiting 30 seconds after stopping containers...${NC}"
+    sleep 30
+
+    echo -e "${YELLOW}Removing all nillion containers...${NC}"
     sudo docker rm $(sudo docker ps -a -q --filter name=nillion-container) 2>/dev/null
-    sleep 5
+    echo -e "${YELLOW}Waiting 30 seconds after removing containers...${NC}"
+    sleep 30
 }
 
 monitor_logs() {
@@ -76,10 +81,9 @@ while true; do
     rpc_endpoint=$(get_random_rpc)
     echo -e "${BLUE}Using RPC endpoint: $rpc_endpoint${NC}"
     run_docker "$rpc_endpoint"
-    echo -e "${BLUE}Container started. Monitoring logs...${NC}"
-    sleep 10
+    echo -e "${BLUE}Container started. Waiting 30 seconds before monitoring logs...${NC}"
+    sleep 30
     if ! monitor_logs; then
         echo -e "${YELLOW}Restarting process with a new RPC endpoint...${NC}"
-        check_and_remove_containers
     fi
 done
