@@ -27,7 +27,7 @@ get_random_rpc() {
 
 run_docker() {
     local rpc_endpoint="$1"
-    sudo docker run -d --name nillion-container -v ./nillion/accuser:/var/tmp nillion/retailtoken-accuser:latest accuse --rpc-endpoint "$rpc_endpoint" --block-start "$(curl -s ${rpc_endpoint}abci_info | jq -r '.result.response.last_block_height')"
+    sudo docker run -d --name nillion-container -v ./nillion/accuser:/var/tmp nillion/retailtoken-accuser:v1.0.1 accuse --rpc-endpoint "$rpc_endpoint" --block-start "$(curl -s ${rpc_endpoint}abci_info | jq -r '.result.response.last_block_height')"
 }
 
 check_and_remove_containers() {
